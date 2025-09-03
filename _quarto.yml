@@ -1,0 +1,3 @@
+project:
+  type: website      # Michelle
+  output-dir: docs

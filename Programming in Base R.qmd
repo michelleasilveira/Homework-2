@@ -1,0 +1,114 @@
+---
+title: "Programming in Base R"
+author: "Michelle A Silveira"
+format: html
+execute:
+  echo: true
+  eval: true
+---
+
+```{r}
+#| label: task-1
+
+# 1) Vectors
+pre_treat   <- c(120,151,125,126,115,132,132,129,134,139,
+                 127,122,127,135,133,128,147,138,140,132)
+after_treat <- c(127,145,135,122,115,122,123,126,126,129,
+                 132,146,120,114,121,120,128,120,133,115)
+
+# 2) Assign subject names
+subj_names <- paste("Subject", 1:20, sep = "_")
+names(pre_treat)   <- subj_names
+names(after_treat) <- subj_names
+
+# 3) Change in BP
+change_bp <- pre_treat - after_treat
+
+# 4) Average decrease across all patients
+avg_decrease_bp <- mean(change_bp)
+
+# 5) Patients who decreased
+patients_decrease <- which(change_bp > 0)
+
+# 6) Positive changes only
+pos_changes <- change_bp[change_bp > 0]
+
+# 7) Average decrease among those who improved
+avg_decrease_pos <- mean(pos_changes)
+
+# Print results
+cat("Average decrease (all patients):", avg_decrease_bp, "\n\n")
+cat("Patients with decreased BP:\n")
+print(names(change_bp)[patients_decrease])
+cat("\nAverage decrease among improved patients:", avg_decrease_pos, "\n")
+```
+
+```{r}
+#| label: task-2
+## Task 2: Basic Data Frame practice
+# 1) Build data frame
+bp_df <- data.frame(
+  patient = names(pre_treat),
+  pre_bp  = pre_treat,
+  post_bp = after_treat,
+  diff_bp = pre_treat - after_treat
+)
+
+# 2) Rows with negative difference
+bp_df_neg <- bp_df[bp_df$diff_bp < 0, ]
+
+# 3) Add flag for post-treatment BP < 120
+bp_df$below_120 <- bp_df$post_bp < 120
+
+# 4) Nicely print the table
+knitr::kable(bp_df, caption = "Blood Pressure Summary (Treatment Group)")
+```
+
+```{r}
+#| label: task-3
+
+## Task 3: List practice
+
+# Placebo data
+pre_placebo   <- c(138,135,147,117,152,134,114,121,131,130)
+after_placebo <- c(105,136,123,130,134,143,135,139,120,124)
+
+# 1) Create data frame
+subj_names_pbo <- paste("Subject", 1:10, sep = "_")
+names(pre_placebo)   <- subj_names_pbo
+names(after_placebo) <- subj_names_pbo
+
+placebo_df <- data.frame(
+  patient = names(pre_placebo),
+  pre_bp  = pre_placebo,
+  post_bp = after_placebo,
+  diff_bp = pre_placebo - after_placebo
+)
+placebo_df$below_120 <- placebo_df$post_bp < 120
+
+# 2) Create list with treatment + placebo
+bp_list <- list(
+  treatment = bp_df,
+  placebo   = placebo_df
+)
+
+# 3) Access first element three ways
+first_elem_a <- bp_list[1]        # list of length 1
+first_elem_b <- bp_list[[1]]      # data frame
+first_elem_c <- bp_list$treatment # data frame
+
+# 4) Extract pre_bp of placebo
+pre_bp_placebo <- bp_list$placebo$pre_bp
+
+# Print confirmations
+cat("Placebo data frame preview:\n")
+print(head(placebo_df, 5))
+
+cat("\nClass of first_elem_a:", class(first_elem_a), "\n")
+cat("Class of first_elem_b:", class(first_elem_b), "\n")
+cat("Class of first_elem_c:", class(first_elem_c), "\n")
+
+cat("\nFirst five placebo pre_bp values:\n")
+print(head(pre_bp_placebo, 5))
+
+```
